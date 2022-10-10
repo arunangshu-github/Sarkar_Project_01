@@ -1,0 +1,58 @@
+---
+title: "HW 02 report "
+author: "Arunangshu Sarkar"
+date: '`r Sys.Date()`'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(knitr.table.format = "simple")
+#rmarkdown::render("Code/Sarkar_Project_01.Rmd", output_file = "../Reports/Sarkar_Project_01.pdf")
+library(utils)
+library(ggplot2)
+library(tidyverse)
+```
+
+# Exercise 2
+
+## Exercise 2A
+
+Below is a graph showing IQ levels by location status:
+
+```{r}
+datatab <- read.csv("../DataRaw/lead-iq-01.csv")
+ggplot(datatab, aes(Smelter, IQ)) +
+  geom_boxplot() +
+  theme_bw() +
+  ggtitle("IQ levels by location")
+```
+
+## Exercise 2B
+
+Below is a formatted table using the `kable()` function
+```{r}
+knitr::kable(datatab[c(1:8, 68:76), ], 
+             caption = "A few rows for each location status",
+             booktabs = TRUE)
+```
+
+
+## Exercise 2C
+
+*Boxplots:* From the box plots, there doesn't seem to be much difference in IQ levels for each location status, though it's hard to interpret the plots due to one extreme outlier present in the "Far" group. Now, the IQ of a person cannot be near 1000, so there seems to be an error when the data was entered. 
+
+*Table:* This nicely formatted table shows a few rows in the data set for each location status.
+
+## Exercise 2D
+
+Calculating the means by location status:
+
+```{r}
+mean_df <- datatab %>%
+  group_by(Smelter) %>%
+  summarise(mean = mean(IQ))
+```
+
+The mean IQ for the subjects who were near the smelter was `r round(mean_df$mean[mean_df$Smelter == "Near"], digits = 2)`, and for those far from the smelter was `r round(mean_df$mean[mean_df$Smelter == "Far"], digits = 2)`
+
