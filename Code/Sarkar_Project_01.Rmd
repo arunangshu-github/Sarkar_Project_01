@@ -6,9 +6,9 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+# Use rmarkdown::render("Code/Sarkar_Project_01.Rmd", output_file = "../Reports/Sarkar_Project_01.pdf") to knit the markdown file
 knitr::opts_chunk$set(echo = TRUE)
 options(knitr.table.format = "simple")
-#rmarkdown::render("Code/Sarkar_Project_01.Rmd", output_file = "../Reports/Sarkar_Project_01.pdf")
 library(utils)
 library(ggplot2)
 library(tidyverse)
@@ -54,5 +54,44 @@ mean_df <- datatab %>%
   summarise(mean = mean(IQ))
 ```
 
-The mean IQ for the subjects who were near the smelter was `r round(mean_df$mean[mean_df$Smelter == "Near"], digits = 2)`, and for those far from the smelter was `r round(mean_df$mean[mean_df$Smelter == "Far"], digits = 2)`
+The mean IQ for the subjects who were near the smelter was `r round(mean_df$mean[mean_df$Smelter == "Near"], digits = 2)`, and for those far from the smelter was `r round(mean_df$mean[mean_df$Smelter == "Far"], digits = 2)`.
+
+## Exercise 3
+
+We notice that the maximum value of IQ in the data set is `r max(datatab$IQ)`, which is not possible. Actually, this entry should be 99.
+
+Below, we change it to 99:
+
+```{r}
+for (i in 1:nrow(datatab)) {
+  if (datatab$IQ[i] == 999) {
+    datatab$IQ[i] <- 99
+  }
+}
+```
+
+Now, we can check the boxplots again to understand the data more:
+
+```{r}
+ggplot(datatab, aes(Smelter, IQ)) +
+  geom_boxplot() +
+  theme_bw() +
+  ggtitle("IQ levels by location, updated to remove 999 outlier")
+```
+
+Now, we calculate the means again:
+
+```{r}
+mean_df <- datatab %>%
+  group_by(Smelter) %>%
+  summarise(mean = mean(IQ))
+```
+
+When the error is rectified, the mean IQ for the subjects who were near the smelter was `r round(mean_df$mean[mean_df$Smelter == "Near"], digits = 2)`, and for those far from the smelter was `r round(mean_df$mean[mean_df$Smelter == "Far"], digits = 2)`.
+
+We now write the updated and processed data to the folder DataProcessed for later use:
+
+```{r}
+write.csv(datatab, "../DataProcessed/lead-iq-999removed.csv")
+```
 
